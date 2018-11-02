@@ -29,12 +29,11 @@ public class LeadProcessTest {
     public void successPath() {
 
         Map<String, Object> variables = new HashMap<>();
-
         ProcessInstance processInstance = processEngine().getRuntimeService().startProcessInstanceByKey("leadProcess", variables);
 
         assertThat(processInstance)
                 .isStarted()
-                .isWaitingAt("captureAndAllocateLead")
+                .isWaitingAt("captureAndLead")
                 .task()
                 .hasCandidateGroup("FirstLineAgents");
 
@@ -47,24 +46,30 @@ public class LeadProcessTest {
         complete(task(), captureAndAllocateLeadVariables);
 
         assertThat(processInstance)
-                .isWaitingAt("qualifyLead")
+                .isWaitingAt("allocateLead")
+                .task()
+                .hasCandidateGroup("FirstLineAgents");
+        Map<String, Object> allocateLeadVariables = new HashMap<>();
+        complete(task(), allocateLeadVariables);
+
+        assertThat(processInstance)
+                .isWaitingAt("captureLeadDetails")
                 .task()
                 .hasCandidateGroup("SecondLineAgents");
 
-        Map<String, Object> qualifyLeadVariables = new HashMap<>();
-
-        complete(task(), qualifyLeadVariables);
+        Map<String, Object> captureLeadDetailsVariables = new HashMap<>();
+        complete(task(), captureLeadDetailsVariables);
 
         assertThat(processInstance)
                 .isWaitingAt("contactLead")
                 .task()
         .hasCandidateGroup("SecondLineAgents");
 
-        complete(task());
+        Map<String, Object> contactLeadVariables = new HashMap<>();
+        complete(task(), contactLeadVariables);
 
         assertThat(processInstance)
                 .isEnded();
-
 
     }
 }

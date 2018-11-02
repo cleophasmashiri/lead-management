@@ -9,6 +9,17 @@ public class NotificationMessage {
     private String toFrom;
     private String subject;
     private String body;
+    private String action;
+    private String actionDescription;
+    private Long leadId;
+
+    public Long getLeadId() {
+        return leadId;
+    }
+
+    public void setLeadId(Long leadId) {
+        this.leadId = leadId;
+    }
 
     public String getToEmail() {
         return toEmail;
@@ -40,5 +51,21 @@ public class NotificationMessage {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getActionDescription() {
+        return actionDescription;
+    }
+
+    public void setActionDescription(String actionDescription) {
+        this.actionDescription = actionDescription;
     }
 }

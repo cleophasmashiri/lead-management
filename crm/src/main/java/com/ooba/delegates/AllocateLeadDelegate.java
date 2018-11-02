@@ -2,7 +2,7 @@ package com.ooba.delegates;
 
 import com.ooba.model.Lead;
 import com.ooba.model.LeadStatus;
-import com.ooba.service.DelegateHelperService;
+import com.ooba.service.DelegateHelperServiceImp;
 import com.ooba.service.LeadService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
@@ -16,29 +16,24 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class UpdateAndValidateLeadDelegate implements JavaDelegate {
+public class AllocateLeadDelegate implements JavaDelegate {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(UpdateAndValidateLeadDelegate.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(AllocateLeadDelegate.class);
 
-    private DelegateHelperService delegateHelper;
+    private DelegateHelperServiceImp delegateHelper;
 
     @Autowired
-    public UpdateAndValidateLeadDelegate(DelegateHelperService delegateHelper) {
+    public AllocateLeadDelegate(DelegateHelperServiceImp delegateHelper) {
         this.delegateHelper = delegateHelper;
     }
+
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        LOGGER.info("UpdateAndValidateLeadDelegate .." + (Long) delegateExecution.getVariable("id"));
+        LOGGER.info("AllocateLeadDelegate ..");
 
-        boolean isValid =  delegateHelper.getIsValid((Long) delegateExecution.getVariable("id"));
-
-        if(isValid) {
-            delegateExecution.setVariable("status", LeadStatus.Captured);
-        }
-
-        delegateExecution.setVariable("isValid", isValid);
+        delegateExecution.setVariable("status", LeadStatus.Allocated);
 
         delegateHelper.updateLeadFromDelegate(delegateExecution);
 

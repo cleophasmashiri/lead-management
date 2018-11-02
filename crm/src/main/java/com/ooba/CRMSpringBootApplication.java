@@ -29,12 +29,12 @@ public class CRMSpringBootApplication implements CommandLineRunner {
 
     public static final String PROCESS_DEFINITION_KEY = "leadProcess";
 
+    @Autowired
+    private ProcessEngine engine;
+
 	public static void main(String... args) {
 		SpringApplication.run(CRMSpringBootApplication.class, args);
 	}
-
-    @Autowired
-    private ProcessEngine engine;
 
     @Override
     public void run(String... strings) throws Exception {

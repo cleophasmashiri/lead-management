@@ -2,6 +2,7 @@ package com.ooba.model;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by cleophas on 2018/10/20.
@@ -19,13 +20,33 @@ public class Lead {
     @Column(name = "lead_id")
     private long id;
     private String firstName;
-    private String lastame;
+    private String lastName;
+
+    @NotNull
     private String emailAddress;
     private String notes;
     private String address;
-    private String status;
     private String company;
+    private int age;
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    @Enumerated(EnumType.STRING)
+    private LeadStatus status;
+
+    public LeadStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LeadStatus status) {
+        this.status = status;
+    }
 
     public long getId() {
         return id;
@@ -43,20 +64,12 @@ public class Lead {
         this.firstName = firstName;
     }
 
-    public String getLastame() {
-        return lastame;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastame(String lastame) {
-        this.lastame = lastame;
-    }
-
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public void setEmailAddres(String emailAddres) {
-        this.emailAddress = emailAddress;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getNotes() {
@@ -75,13 +88,6 @@ public class Lead {
         this.address = address;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public String getCompany() {
         return company;
@@ -90,4 +96,13 @@ public class Lead {
     public void setCompany(String company) {
         this.company = company;
     }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
 }

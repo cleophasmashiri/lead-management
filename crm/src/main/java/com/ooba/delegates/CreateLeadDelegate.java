@@ -1,6 +1,8 @@
 package com.ooba.delegates;
 
 import com.ooba.model.Lead;
+import com.ooba.model.LeadStatus;
+import com.ooba.service.DelegateHelperServiceImp;
 import com.ooba.service.LeadService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
@@ -18,25 +20,22 @@ public class CreateLeadDelegate implements JavaDelegate {
 
     private static Logger LOGGER = LoggerFactory.getLogger(CreateLeadDelegate.class);
 
+    private DelegateHelperServiceImp delegateHelper;
+
     @Autowired
-    private LeadService leadService;
+    public CreateLeadDelegate(DelegateHelperServiceImp delegateHelper) {
+        this.delegateHelper = delegateHelper;
+    }
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
         LOGGER.info("Creating a new lead ..");
 
-        Lead lead = new Lead();
-        lead.setFirstName((String) delegateExecution.getVariable("firstName"));
-        lead.setLastame((String) delegateExecution.getVariable("lastName"));
-        lead.setEmailAddres((String) delegateExecution.getVariable("emailAddress"));
-        lead.setAddress((String) delegateExecution.getVariable("address"));
-        lead.setNotes((String) delegateExecution.getVariable("notes"));
+        delegateExecution.setVariable("status", LeadStatus.New);
 
-        leadService.createNewLead(lead);
+        delegateHelper.updateLeadFromDelegate(delegateExecution);
 
-        lead.setId(lead.getId());
 
-        delegateExecution.setVariable("id", lead.getId());
     }
 }

@@ -37,8 +37,8 @@ public class NotificationServiceImpl implements NotificationService {
             helper = new MimeMessageHelper(message);
             helper.setTo(notificationMessage.getToEmail());
             helper.setSubject(notificationMessage.getSubject());
-            String content = mailContentBuilder.build(notificationMessage.getBody(), notificationMessage.getSubject());
-            helper.setText(content);
+            String content = mailContentBuilder.build(notificationMessage);
+            helper.setText(content, true);
         } catch (MessagingException e) {
             LOGGER.error("Error .. " + e );
         }

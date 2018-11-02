@@ -7,13 +7,14 @@
     <bpmn:laneSet id="LaneSet_0w80hlv">
       <bpmn:lane id="Lane_0s04x86" name="First Level Agent">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>captureAndAllocateLead</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>captureAndLead</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>allocateLead</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_16mn8nr" name="Second Level Agent">
-        <bpmn:flowNodeRef>qualifyLead</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>contactLead</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0fcpztp</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_09n5iyt</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>captureLeadDetails</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_0jj9dv9" name="System">
         <bpmn:flowNodeRef>Task_0exehdd</bpmn:flowNodeRef>
@@ -27,12 +28,13 @@
         <bpmn:flowNodeRef>Task_0yp29ui</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0n7prra</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1tz6bye</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0hus8uq</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_0rcm8rd" name="Lead">
         <bpmn:flowNodeRef>Task_1hzm2k6</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:sequenceFlow id="SequenceFlow_06grtg1" sourceRef="StartEvent_1" targetRef="captureAndAllocateLead" />
+    <bpmn:sequenceFlow id="SequenceFlow_06grtg1" sourceRef="StartEvent_1" targetRef="captureAndLead" />
     <bpmn:sequenceFlow id="isDuplicate_no" name="No" sourceRef="ExclusiveGateway_0fcpztp" targetRef="contactLead">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{!isDuplicate}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -55,8 +57,8 @@
     <bpmn:sequenceFlow id="noContactsGreaterThan3_yes" name="Yes" sourceRef="ExclusiveGateway_0o4ealt" targetRef="Task_0yp29ui">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{numberOfRequestForMoreInfor &gt;=3}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0wq0yeg" sourceRef="Task_1sdtzx1" targetRef="qualifyLead" />
-    <bpmn:sequenceFlow id="SequenceFlow_1xu2qwh" sourceRef="qualifyLead" targetRef="Task_0exehdd" />
+    <bpmn:sequenceFlow id="SequenceFlow_0wq0yeg" sourceRef="allocateLead" targetRef="Task_0hus8uq" />
+    <bpmn:sequenceFlow id="SequenceFlow_1xu2qwh" sourceRef="captureLeadDetails" targetRef="Task_0exehdd" />
     <bpmn:serviceTask id="Task_0exehdd" name="Check for duplicates Lead" camunda:delegateExpression="#{checkDuplicateLeadsDelegate}">
       <bpmn:incoming>SequenceFlow_1xu2qwh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1i1l76z</bpmn:outgoing>
@@ -69,14 +71,10 @@
       <bpmn:incoming>SequenceFlow_1mqrbrg</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0e3n2kx</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_0tgyv81" sourceRef="captureAndAllocateLead" targetRef="Task_1sdtzx1" />
-    <bpmn:userTask id="qualifyLead" name="Qualify Lead" camunda:formKey="embedded:app:forms/createLead.html" camunda:candidateGroups="SecondLineAgents">
-      <bpmn:incoming>SequenceFlow_0wq0yeg</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1xu2qwh</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:serviceTask id="Task_1sdtzx1" name="Create Lead" camunda:delegateExpression="#{createLeadDelegate}">
+    <bpmn:sequenceFlow id="SequenceFlow_0tgyv81" sourceRef="captureAndLead" targetRef="Task_1sdtzx1" />
+    <bpmn:serviceTask id="Task_1sdtzx1" name="Create New Lead" camunda:delegateExpression="#{createLeadDelegate}">
       <bpmn:incoming>SequenceFlow_0tgyv81</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0wq0yeg</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0eq4mkb</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:exclusiveGateway id="ExclusiveGateway_1wlyksq" name="Is valid">
       <bpmn:incoming>SequenceFlow_0e3n2kx</bpmn:incoming>
@@ -92,7 +90,7 @@
       <bpmn:incoming>noContactsGreaterThan3_no</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0txn0aw</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="Task_1hzm2k6" name="Request more information" camunda:formKey="embedded:app:forms/createLead.html">
+    <bpmn:userTask id="Task_1hzm2k6" name="Provide more information" camunda:formKey="embedded:app:forms/createLead.html">
       <bpmn:incoming>SequenceFlow_0txn0aw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1f31e0w</bpmn:outgoing>
     </bpmn:userTask>
@@ -123,7 +121,7 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>SequenceFlow_06grtg1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="captureAndAllocateLead" name="Capture and Allocate Lead" camunda:formKey="embedded:app:forms/createLead.html" camunda:candidateGroups="FirstLineAgents">
+    <bpmn:userTask id="captureAndLead" name="Capture New Lead" camunda:formKey="embedded:app:forms/createLead.html" camunda:candidateGroups="FirstLineAgents">
       <bpmn:incoming>SequenceFlow_06grtg1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0tgyv81</bpmn:outgoing>
     </bpmn:userTask>
@@ -134,6 +132,20 @@
       <bpmn:incoming>SequenceFlow_1jqiotd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1mqrbrg</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0eq4mkb" sourceRef="Task_1sdtzx1" targetRef="allocateLead" />
+    <bpmn:userTask id="allocateLead" name="Allocate Lead" camunda:formKey="embedded:app:forms/createLead.html" camunda:candidateGroups="FirstLineAgents">
+      <bpmn:incoming>SequenceFlow_0eq4mkb</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0wq0yeg</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="captureLeadDetails" name="Capture Lead Details" camunda:formKey="embedded:app:forms/createLead.html" camunda:candidateGroups="SecondLineAgents">
+      <bpmn:incoming>SequenceFlow_0bmgq6d</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1xu2qwh</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_0hus8uq" name="Allocate Lead" camunda:delegateExpression="#{allocateLeadDelegate}">
+      <bpmn:incoming>SequenceFlow_0wq0yeg</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0bmgq6d</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0bmgq6d" sourceRef="Task_0hus8uq" targetRef="captureLeadDetails" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1c6c09f">
@@ -162,8 +174,8 @@
       <bpmndi:BPMNShape id="ServiceTask_0vvjxim_di" bpmnElement="Task_1sdtzx1">
         <dc:Bounds x="429" y="521" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0pgg0ha_di" bpmnElement="qualifyLead">
-        <dc:Bounds x="746" y="372" width="100" height="80" />
+      <bpmndi:BPMNShape id="UserTask_0pgg0ha_di" bpmnElement="captureLeadDetails">
+        <dc:Bounds x="758" y="364" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_0fcpztp_di" bpmnElement="ExclusiveGateway_0fcpztp" isMarkerVisible="true">
         <dc:Bounds x="1016" y="387" width="50" height="50" />
@@ -279,14 +291,12 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0wq0yeg_di" bpmnElement="SequenceFlow_0wq0yeg">
-        <di:waypoint x="529" y="561" />
-        <di:waypoint x="662" y="561" />
-        <di:waypoint x="662" y="412" />
-        <di:waypoint x="742" y="412" />
+        <di:waypoint x="686" y="239" />
+        <di:waypoint x="686" y="521" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1xu2qwh_di" bpmnElement="SequenceFlow_1xu2qwh">
-        <di:waypoint x="847" y="412" />
-        <di:waypoint x="921" y="412" />
+        <di:waypoint x="858" y="404" />
+        <di:waypoint x="921" y="404" />
         <di:waypoint x="921" y="521" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1qollhu_di" bpmnElement="Task_0exehdd">
@@ -308,7 +318,7 @@
         <di:waypoint x="1296" y="570" />
         <di:waypoint x="1363" y="570" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_1ykcx4w_di" bpmnElement="captureAndAllocateLead">
+      <bpmndi:BPMNShape id="UserTask_1ykcx4w_di" bpmnElement="captureAndLead">
         <dc:Bounds x="429" y="154" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0tgyv81_di" bpmnElement="SequenceFlow_0tgyv81">
@@ -322,6 +332,23 @@
       <bpmndi:BPMNShape id="ServiceTask_1y4tkqu_di" bpmnElement="Task_0yp29ui">
         <dc:Bounds x="1878" y="670" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0eq4mkb_di" bpmnElement="SequenceFlow_0eq4mkb">
+        <di:waypoint x="529" y="561" />
+        <di:waypoint x="583" y="561" />
+        <di:waypoint x="583" y="194" />
+        <di:waypoint x="636" y="194" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_07u3zqr_di" bpmnElement="allocateLead">
+        <dc:Bounds x="636" y="154" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_10601e1_di" bpmnElement="Task_0hus8uq">
+        <dc:Bounds x="636" y="521" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0bmgq6d_di" bpmnElement="SequenceFlow_0bmgq6d">
+        <di:waypoint x="736" y="561" />
+        <di:waypoint x="808" y="561" />
+        <di:waypoint x="808" y="444" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
