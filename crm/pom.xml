@@ -65,8 +65,9 @@
     <dependency>
       <groupId>org.camunda.consulting.snippets</groupId>
       <artifactId>camunda-demo-support</artifactId>
-      <version>0.3.8-SNAPSHOT</version>
+      <version>0.3.3</version>
     </dependency>
+
 
     <dependency>
       <groupId>org.camunda.bpm.springboot</groupId>

@@ -1,0 +1,187 @@
+<string>Create Vehicle Clearance Application</string>
+<form role="form" class="form-horizontal">
+    <h3>Personal Details</h3>
+    <div class="control-group">
+        <label class="control-label">First Name</label>
+        <div class="controls">
+            <input type="text" class="form-control"
+                   cam-variable-name="firstName"
+                   cam-variable-type="String"
+                   required
+            />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Last Name</label>
+        <div class="controls">
+            <input type="text" class="form-control"
+                   cam-variable-name="lastName"
+                   cam-variable-type="String"
+                   required
+            />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Email Address</label>
+        <div class="controls">
+            <input type="text" class="form-control"
+                   cam-variable-name="emailAddress"
+                   cam-variable-type="String"
+                   required
+                   ng-pattern="/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/"
+            />
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">Passport Document</label>
+        <div class="controls">
+            <a cam-file-download="passportDocument"  cam-variable-name="passportDocument"></a>
+        </div>
+    </div>
+    <!--<hr>-->
+    <!--<h3>Vehicle Details</h3>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Vehicle Make</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="vehicleMake"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Vehicle Model</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="vehicleModel"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Year Of Manufacture</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="yearOfManufacture"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Mileage</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="mileage"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">VIN</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="vin"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Engine Number</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="engineNumber"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Engine Capacity</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="engineCapacity"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Vehicle Type</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="vehicleType"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Purchase Date</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="purchaseDate"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Purchase Price</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="purchasePrice"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Date Of Change Of Ownership</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="dateOfChangeOfOwnership"-->
+                   <!--cam-variable-type="String"-->
+                   <!--required-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Sapco Document</label>-->
+        <!--<div class="controls">-->
+            <!--<a cam-file-download="sapcoDocument"></a>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Itac Document</label>-->
+        <!--<div class="controls">-->
+            <!--<a cam-file-download="itacDocument"></a>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Car Registration Document</label>-->
+        <!--<div class="controls">-->
+            <!--<a cam-file-download="itacDocument"></a>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Police Clearance Document</label>-->
+        <!--<div class="controls">-->
+            <!--<a cam-file-download="policeClearanceDocument"></a>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="control-group">-->
+        <!--<label class="control-label">Notes</label>-->
+        <!--<div class="controls">-->
+            <!--<input type="text" class="form-control"-->
+                   <!--cam-variable-name="notes"-->
+                   <!--cam-variable-type="String"-->
+            <!--/>-->
+        <!--</div>-->
+    <!--</div>-->
+</form>

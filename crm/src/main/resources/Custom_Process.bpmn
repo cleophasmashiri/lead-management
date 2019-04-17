@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.2.4">
+  <bpmn:collaboration id="Collaboration_0q1td4l">
+    <bpmn:participant id="Participant_06g7dae" processRef="CustomsProcess" />
+  </bpmn:collaboration>
+  <bpmn:process id="CustomsProcess" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1jjmgiw" name="Car Importer">
+        <bpmn:flowNodeRef>initiate_application</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_068sffd</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_055c8ij</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1uq1max</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>email_quote_to_customer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>process_invoice_payment</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>generate_car_documents</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>notify_customer_to_collect_docs</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>collect_car_docments</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_167mhph</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1o65z20</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>calculate_duty_quotation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>customer_invoice_payment</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_13ew9vt" name="Customs Officer">
+        <bpmn:flowNodeRef>ExclusiveGateway_0e5pmcw</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1s2sxz5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>generate_duty_invoice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>email_duty_invoice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0lxehbx</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>custom_officer_review_application</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0r2hf1y" name="Customs Supervisor">
+        <bpmn:flowNodeRef>approve_duty_invoice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_0fmsrj1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="Submit Car Clearance Application" camunda:formKey="embedded:app:forms/createLead.html">
+      <bpmn:outgoing>SequenceFlow_1uwtiff</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1uwtiff" sourceRef="StartEvent_1" targetRef="initiate_application" />
+    <bpmn:serviceTask id="initiate_application" name="Initiate Application" camunda:delegateExpression="#{createApplication}">
+      <bpmn:incoming>SequenceFlow_1uwtiff</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_19i1jdz</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1jk1sk9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_068sffd" name="Is application valid">
+      <bpmn:incoming>SequenceFlow_1jk1sk9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1quvbf6</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1c7tnyt</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_1jk1sk9" sourceRef="initiate_application" targetRef="ExclusiveGateway_068sffd" />
+    <bpmn:sequenceFlow id="SequenceFlow_1quvbf6" sourceRef="ExclusiveGateway_068sffd" targetRef="Task_1o65z20">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{!application.isApplicationValid()}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_19i1jdz" sourceRef="Task_167mhph" targetRef="initiate_application" />
+    <bpmn:sequenceFlow id="SequenceFlow_1c7tnyt" sourceRef="ExclusiveGateway_068sffd" targetRef="calculate_duty_quotation">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{application.isApplicationValid()}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_032dl7l" sourceRef="calculate_duty_quotation" targetRef="email_quote_to_customer" />
+    <bpmn:sequenceFlow id="SequenceFlow_03g7ui9" sourceRef="email_quote_to_customer" targetRef="custom_officer_review_application" />
+    <bpmn:sequenceFlow id="SequenceFlow_0yp857y" sourceRef="custom_officer_review_application" targetRef="ExclusiveGateway_0e5pmcw" />
+    <bpmn:sequenceFlow id="SequenceFlow_0gfgza9" sourceRef="ExclusiveGateway_0e5pmcw" targetRef="generate_duty_invoice">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{customsOfficerApproved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0wm58le" sourceRef="ExclusiveGateway_0e5pmcw" targetRef="Task_1s2sxz5">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{!customsOfficerApproved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Task_055c8ij" name="Request Docs/Info">
+      <bpmn:incoming>SequenceFlow_1kx3a6q</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0bie5z5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0bie5z5" sourceRef="Task_055c8ij" targetRef="custom_officer_review_application" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0e5pmcw" name="Is review successfully">
+      <bpmn:incoming>SequenceFlow_0yp857y</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0gfgza9</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0wm58le</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0et9di8" sourceRef="generate_duty_invoice" targetRef="approve_duty_invoice" />
+    <bpmn:sequenceFlow id="SequenceFlow_1py7xgx" sourceRef="approve_duty_invoice" targetRef="ExclusiveGateway_0fmsrj1" />
+    <bpmn:sequenceFlow id="SequenceFlow_0waq5vw" sourceRef="ExclusiveGateway_0fmsrj1" targetRef="email_duty_invoice">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{supervisorApproved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_13ivuhs" sourceRef="ExclusiveGateway_0fmsrj1" targetRef="Task_0lxehbx">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{!supervisorApproved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0cp4nie" sourceRef="collect_car_docments" targetRef="EndEvent_1uq1max" />
+    <bpmn:sequenceFlow id="SequenceFlow_16zjp24" sourceRef="customer_invoice_payment" targetRef="process_invoice_payment" />
+    <bpmn:sequenceFlow id="SequenceFlow_0r0sd95" sourceRef="process_invoice_payment" targetRef="generate_car_documents" />
+    <bpmn:endEvent id="EndEvent_1uq1max" name="End Application">
+      <bpmn:incoming>SequenceFlow_0cp4nie</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1xge85c" sourceRef="generate_car_documents" targetRef="notify_customer_to_collect_docs" />
+    <bpmn:serviceTask id="email_quote_to_customer" name="Email Quote to Customer" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_032dl7l</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_03g7ui9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1kx3a6q" sourceRef="Task_1s2sxz5" targetRef="Task_055c8ij" />
+    <bpmn:serviceTask id="Task_1s2sxz5" name="Notify Customer" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_0wm58le</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1kx3a6q</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="approve_duty_invoice" name="Approve Duty Invoice " camunda:candidateGroups="Customers">
+      <bpmn:incoming>SequenceFlow_0et9di8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1py7xgx</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0dldco3" sourceRef="notify_customer_to_collect_docs" targetRef="collect_car_docments" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0fmsrj1" name="Has Supervise Approved">
+      <bpmn:incoming>SequenceFlow_1py7xgx</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0waq5vw</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_13ivuhs</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="process_invoice_payment" name="Process Invoice Payment" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_16zjp24</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0r0sd95</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="generate_car_documents" name="Generate Car Documents" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_0r0sd95</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1xge85c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="notify_customer_to_collect_docs" name="Notify Customer To Collect Docs" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_1xge85c</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0dldco3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="collect_car_docments" name="Collect Car Docments" camunda:candidateGroups="customers">
+      <bpmn:incoming>SequenceFlow_0dldco3</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0cp4nie</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_167mhph" name="Request Missing Docs/Info">
+      <bpmn:incoming>SequenceFlow_0fpy5j6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_19i1jdz</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0fpy5j6" sourceRef="Task_1o65z20" targetRef="Task_167mhph" />
+    <bpmn:sequenceFlow id="SequenceFlow_07ew4cl" sourceRef="email_duty_invoice" targetRef="customer_invoice_payment" />
+    <bpmn:serviceTask id="Task_1o65z20" name="Send Request Info Email" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_1quvbf6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0fpy5j6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="calculate_duty_quotation" name="Calculate Duty Quotation" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_1c7tnyt</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_032dl7l</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1ewdtn4" sourceRef="Task_0lxehbx" targetRef="email_duty_invoice" />
+    <bpmn:serviceTask id="generate_duty_invoice" name="Generate Duty Invoice" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_0gfgza9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0et9di8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="email_duty_invoice" name="Email Duty Invoice" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_0waq5vw</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1ewdtn4</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_07ew4cl</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_0lxehbx" name="Re-Generate Duty Invoice" camunda:delegateExpression="#{notifyCandidate}">
+      <bpmn:incoming>SequenceFlow_13ivuhs</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ewdtn4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="custom_officer_review_application" name="Review application" camunda:candidateGroups="CustomOfficers">
+      <bpmn:incoming>SequenceFlow_03g7ui9</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0bie5z5</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0yp857y</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="customer_invoice_payment" name="Pay Invoice Amount" camunda:candidateGroups="customers">
+      <bpmn:incoming>SequenceFlow_07ew4cl</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_16zjp24</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0q1td4l">
+      <bpmndi:BPMNShape id="Participant_06g7dae_di" bpmnElement="Participant_06g7dae">
+        <dc:Bounds x="98" y="55" width="2091" height="772" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="180" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="170" y="215" width="56" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1jjmgiw_di" bpmnElement="Lane_1jjmgiw">
+        <dc:Bounds x="128" y="55" width="2061" height="309" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_13ew9vt_di" bpmnElement="Lane_13ew9vt">
+        <dc:Bounds x="128" y="364" width="2061" height="268" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0r2hf1y_di" bpmnElement="Lane_0r2hf1y">
+        <dc:Bounds x="126" y="632" width="2061" height="195" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1uwtiff_di" bpmnElement="SequenceFlow_1uwtiff">
+        <di:waypoint x="216" y="190" />
+        <di:waypoint x="266" y="190" />
+        <di:waypoint x="266" y="190" />
+        <di:waypoint x="319" y="190" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="281" y="184" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0pcw1zp_di" bpmnElement="initiate_application">
+        <dc:Bounds x="319" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_068sffd_di" bpmnElement="ExclusiveGateway_068sffd" isMarkerVisible="true">
+        <dc:Bounds x="485.29606879606877" y="165" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="478" y="135" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1jk1sk9_di" bpmnElement="SequenceFlow_1jk1sk9">
+        <di:waypoint x="419" y="190" />
+        <di:waypoint x="485" y="190" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="452" y="169" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1quvbf6_di" bpmnElement="SequenceFlow_1quvbf6">
+        <di:waypoint x="535" y="190" />
+        <di:waypoint x="601" y="190" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="575" y="169" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_00u06tb_di" bpmnElement="Task_167mhph">
+        <dc:Bounds x="784" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_19i1jdz_di" bpmnElement="SequenceFlow_19i1jdz">
+        <di:waypoint x="834" y="150" />
+        <di:waypoint x="834" y="106" />
+        <di:waypoint x="369" y="106" />
+        <di:waypoint x="369" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="517" y="85" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1c7tnyt_di" bpmnElement="SequenceFlow_1c7tnyt">
+        <di:waypoint x="510" y="215" />
+        <di:waypoint x="510" y="296" />
+        <di:waypoint x="601" y="296" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="525" y="249.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_08scq8r_di" bpmnElement="calculate_duty_quotation">
+        <dc:Bounds x="601" y="256" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_032dl7l_di" bpmnElement="SequenceFlow_032dl7l">
+        <di:waypoint x="701" y="296" />
+        <di:waypoint x="784" y="296" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="750" y="275" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1sh8a9v_di" bpmnElement="email_quote_to_customer">
+        <dc:Bounds x="784" y="256" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_03g7ui9_di" bpmnElement="SequenceFlow_03g7ui9">
+        <di:waypoint x="834" y="336" />
+        <di:waypoint x="834" y="366" />
+        <di:waypoint x="837" y="366" />
+        <di:waypoint x="837" y="395" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="849" y="386" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1x3kvln_di" bpmnElement="custom_officer_review_application">
+        <dc:Bounds x="787" y="395" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0e5pmcw_di" bpmnElement="ExclusiveGateway_0e5pmcw" isMarkerVisible="true">
+        <dc:Bounds x="980.7478787878788" y="532" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="976" y="589" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0yp857y_di" bpmnElement="SequenceFlow_0yp857y">
+        <di:waypoint x="837" y="475" />
+        <di:waypoint x="837" y="558" />
+        <di:waypoint x="981" y="557" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="849" y="529" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0gfgza9_di" bpmnElement="SequenceFlow_0gfgza9">
+        <di:waypoint x="1031" y="557" />
+        <di:waypoint x="1107" y="557" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1068.8739393939395" y="536" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_10ygimz_di" bpmnElement="generate_duty_invoice">
+        <dc:Bounds x="1107" y="517" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0wm58le_di" bpmnElement="SequenceFlow_0wm58le">
+        <di:waypoint x="1006" y="532" />
+        <di:waypoint x="1006" y="481" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1021" y="428" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0zk6ttm_di" bpmnElement="Task_055c8ij">
+        <dc:Bounds x="956" y="256" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0bie5z5_di" bpmnElement="SequenceFlow_0bie5z5">
+        <di:waypoint x="956" y="296" />
+        <di:waypoint x="920" y="296" />
+        <di:waypoint x="920" y="435" />
+        <di:waypoint x="887" y="435" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="935" y="377" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0et9di8_di" bpmnElement="SequenceFlow_0et9di8">
+        <di:waypoint x="1157" y="597" />
+        <di:waypoint x="1157" y="675" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1208" y="615" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1043lkd_di" bpmnElement="approve_duty_invoice">
+        <dc:Bounds x="1107" y="675" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0fmsrj1_di" bpmnElement="ExclusiveGateway_0fmsrj1" isMarkerVisible="true">
+        <dc:Bounds x="1308" y="690" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1297" y="747" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1py7xgx_di" bpmnElement="SequenceFlow_1py7xgx">
+        <di:waypoint x="1207" y="715" />
+        <di:waypoint x="1308" y="715" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1344.5" y="694" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1uq1max_di" bpmnElement="EndEvent_1uq1max">
+        <dc:Bounds x="2107" y="238" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2087" y="281" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0waq5vw_di" bpmnElement="SequenceFlow_0waq5vw">
+        <di:waypoint x="1358" y="715" />
+        <di:waypoint x="1489" y="715" />
+        <di:waypoint x="1489" y="481" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1463.5" y="694" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_13ivuhs_di" bpmnElement="SequenceFlow_13ivuhs">
+        <di:waypoint x="1333" y="690" />
+        <di:waypoint x="1333" y="481" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1420" y="617.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0cp4nie_di" bpmnElement="SequenceFlow_0cp4nie">
+        <di:waypoint x="2067" y="256" />
+        <di:waypoint x="2107" y="256" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1mzgaur_di" bpmnElement="collect_car_docments">
+        <dc:Bounds x="1967" y="216" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0jfmir2_di" bpmnElement="customer_invoice_payment">
+        <dc:Bounds x="1389" y="209" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_16zjp24_di" bpmnElement="SequenceFlow_16zjp24">
+        <di:waypoint x="1489" y="249" />
+        <di:waypoint x="1515" y="249" />
+        <di:waypoint x="1515" y="256" />
+        <di:waypoint x="1540" y="256" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0r0sd95_di" bpmnElement="SequenceFlow_0r0sd95">
+        <di:waypoint x="1640" y="256" />
+        <di:waypoint x="1688" y="256" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0klvouh_di" bpmnElement="process_invoice_payment">
+        <dc:Bounds x="1540" y="216" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1xge85c_di" bpmnElement="SequenceFlow_1xge85c">
+        <di:waypoint x="1788" y="256" />
+        <di:waypoint x="1824" y="256" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0v7aiff_di" bpmnElement="generate_car_documents">
+        <dc:Bounds x="1688" y="216" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1kx3a6q_di" bpmnElement="SequenceFlow_1kx3a6q">
+        <di:waypoint x="1006" y="401" />
+        <di:waypoint x="1006" y="336" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0ohf0qa_di" bpmnElement="Task_1s2sxz5">
+        <dc:Bounds x="956" y="401" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0dldco3_di" bpmnElement="SequenceFlow_0dldco3">
+        <di:waypoint x="1924" y="256" />
+        <di:waypoint x="1967" y="256" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1xpbwu7_di" bpmnElement="notify_customer_to_collect_docs">
+        <dc:Bounds x="1824" y="216" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0fpy5j6_di" bpmnElement="SequenceFlow_0fpy5j6">
+        <di:waypoint x="701" y="190" />
+        <di:waypoint x="784" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_07ew4cl_di" bpmnElement="SequenceFlow_07ew4cl">
+        <di:waypoint x="1489" y="401" />
+        <di:waypoint x="1489" y="349" />
+        <di:waypoint x="1439" y="349" />
+        <di:waypoint x="1439" y="289" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_015pz5y_di" bpmnElement="email_duty_invoice">
+        <dc:Bounds x="1439" y="401" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_05n8yns_di" bpmnElement="Task_1o65z20">
+        <dc:Bounds x="601" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1ltm7xh_di" bpmnElement="Task_0lxehbx">
+        <dc:Bounds x="1283" y="401" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ewdtn4_di" bpmnElement="SequenceFlow_1ewdtn4">
+        <di:waypoint x="1383" y="441" />
+        <di:waypoint x="1439" y="441" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
